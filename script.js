@@ -523,4 +523,6 @@ document.addEventListener('DOMContentLoaded', function() {
 // ============================================
 window.addEventListener('load', function() {
     document.body.classList.add('loaded');
+    // Auto year
+document.getElementById("year").textContent = new Date().getFullYear();
 });
