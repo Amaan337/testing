@@ -130,57 +130,68 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // ============================================
-    // Contact Form Handling
-    // ============================================
-    if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Get form data
-            const formData = new FormData(contactForm);
-            const data = Object.fromEntries(formData);
-            
-            // Validate form data
-            if (!data.name || !data.email || !data.message) {
-                showNotification('Please fill in all required fields.', 'error');
-                return;
-            }
-            
-            // Email validation
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(data.email)) {
-                showNotification('Please enter a valid email address.', 'error');
-                return;
-            }
-            
-            // Simulate form submission
-            const submitBtn = contactForm.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-            submitBtn.disabled = true;
-            
-            setTimeout(() => {
-                // Hide form and show success message
-                contactForm.style.display = 'none';
-                successMessage.classList.add('active');
-                
-                // Reset form
-                contactForm.reset();
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-                
-                // Show notification
-                showNotification('Message sent successfully!', 'success');
-                
-                // Reset after 5 seconds
-                setTimeout(() => {
-                    successMessage.classList.remove('active');
-                    contactForm.style.display = 'block';
-                }, 5000);
-            }, 1500);
-        });
+  // ================================
+ // Contact Form Handling (EmailJS)
+ // ================================
+
+if (contactForm) {
+
+  contactForm.addEventListener('submit', function(e) {
+
+    e.preventDefault();
+
+    // Get form data
+    const formData = new FormData(contactForm);
+    const data = Object.fromEntries(formData);
+
+    // Validate required fields
+    if (!data.name || !data.email || !data.message) {
+      showNotification('Please fill in all required fields.', 'error');
+      return;
     }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(data.email)) {
+      showNotification('Please enter a valid email address.', 'error');
+      return;
+    }
+
+    // Disable button while sending
+    const submitBtn = contactForm.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = 'Sending...';
+    submitBtn.disabled = true;
+
+    //  SEND EMAIL USING EMAILJS
+    emailjs.sendForm(
+      'service_oflm70o',
+      'template_1o9ynct',
+      contactForm,
+      'N0LxLzwv4X7SPswXx'
+    ).then(function() {
+
+      contactForm.style.display = 'none';
+      successMessage.classList.add('active');
+      contactForm.reset();
+
+      showNotification('Message sent successfully!', 'success');
+
+      submitBtn.innerHTML = originalText;
+      submitBtn.disabled = false;
+
+    }, function(error) {
+
+      showNotification('Failed to send message', 'error');
+
+      submitBtn.innerHTML = originalText;
+      submitBtn.disabled = false;
+
+    });
+
+  });
+
+}
 
     // ============================================
     // Newsletter Form Handling
